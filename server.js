@@ -45,12 +45,12 @@ app.get("/form", (req, res) => {
 });
 
 app.get("/reminders", (req, res) => {
-  let html = "<h2>目前提醒事項</h2><table border='1'><tr><th>姓名</th><th>User ID</th><th>時間</th><th>內容</th><th>週期</th><th>參數</th><th>到期日</th><th>操作</th></tr>";
+  let html = "<h2>目前提醒事項</h2><table border='1'><tr><th>姓名</th><th>設定者</th><th>時間</th><th>內容</th><th>週期</th><th>參數</th><th>到期日</th><th>操作</th></tr>";
   reminders.forEach(r => {
     html += `<tr>
       <form action="/edit-reminder" method="post">
         <input type="hidden" name="id" value="${r.id}">
-        <td><input type='text' name='name' value='${r.name || ""}' required></td><td><input type='text' name='userId' value='${r.userId}' required></td>
+        <td><input type='text' name='name' value='${r.name || ""}' required></td><td><input type='text' name='createdBy' value='${r.createdBy}' required></td>
         <td><input type="text" name="time" value="${r.time}" required></td>
         <td><input type="text" name="message" value="${r.message}" required></td>
         <td>
@@ -78,16 +78,16 @@ app.get("/reminders", (req, res) => {
 });
 
 app.post("/set-reminder", (req, res) => {
-  const { userId, name, time, message, repeatType, repeatParam, expireDate } = req.body;
-  reminders.push({ id: uuidv4(), userId, name, time, message, repeatType, repeatParam, expireDate, lastSent: "" });
+  const { createdBy, name, time, message, repeatType, repeatParam, expireDate } = req.body;
+  reminders.push({ id: uuidv4(), createdBy, name, time, message, repeatType, repeatParam, expireDate, lastSent: "" });
   res.redirect("/reminders");
 });
 
 app.post("/edit-reminder", (req, res) => {
-  const { id, userId, name, time, message, repeatType, repeatParam, expireDate } = req.body;
+  const { id, createdBy, name, time, message, repeatType, repeatParam, expireDate } = req.body;
   const r = reminders.find(r => r.id === id);
   if (r) {
-    r.userId = userId;
+    r.createdBy = createdBy;
     r.name = name;
     r.time = time;
     r.message = message;
@@ -119,7 +119,7 @@ app.get("/run-reminder", (req, res) => {
       );
 
     if (shouldRun && reminder.lastSent !== now.dateStr) {
-      sendLineMessage(reminder.userId, `提醒您（${reminder.name}）：${reminder.message}`);
+      sendLineMessage(reminder.createdBy, `提醒您（${reminder.name}）：${reminder.message}`);
       reminder.lastSent = now.dateStr;
     }
   });
