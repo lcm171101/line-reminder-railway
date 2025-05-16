@@ -1,34 +1,21 @@
 
-# LINE Reminder Bot for Railway
+# LINE Reminder Bot for Render
 
-這是一個 LINE 定時提醒機器人，支援 LINE Bot 推播提醒訊息，可透過表單設定提醒內容。
+## 🧩 功能
+- 表單輸入 LINE User ID 與提醒時間
+- 自動發送 LINE 訊息提醒
+- 每分鐘可由外部服務觸發 `/run-reminder`
 
-## ✅ 功能特色
+## 🚀 Render 部署流程
+1. 上傳此專案至 GitHub
+2. 前往 https://render.com 建立 Web Service
+3. 指定 GitHub 倉庫來源，Branch 選 main
+4. 設定環境變數：LINE_TOKEN = 你的 LINE Bot Token
+5. 等待部署完成
 
-- 網頁表單設定提醒時間與內容
-- 自動推送 LINE 訊息
-- 可部署於 Railway，免費且不中斷
-- 可搭配 cron-job.org 每分鐘定時呼叫
+## 🔗 預設網址路由
+- `/form`：提醒設定頁面
+- `/run-reminder`：觸發提醒邏輯（可配合 cron-job.org）
 
-## 🚀 一鍵部署到 Railway
-
-[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template/new)
-
-1. 點上方按鈕進入 Railway 建立專案
-2. 設定環境變數：`LINE_TOKEN`
-3. 等待部署完成，開啟 `/form` 進行測試
-
-## 🧪 測試
-
-- 表單：`https://your-app.up.railway.app/form`
-- 定時執行（手動）：`https://your-app.up.railway.app/run-reminder`
-
-## 🔧 環境變數
-
-| 名稱 | 說明 |
-|------|------|
-| `LINE_TOKEN` | 你的 LINE Bot 的 Channel Access Token |
-
-## ⏱️ 建議排程方式
-
-建議搭配 [cron-job.org](https://cron-job.org) 來定時觸發 `/run-reminder`。
+## ⏱ 推薦自動排程服務
+- [https://cron-job.org](https://cron-job.org)：每分鐘觸發 /run-reminder

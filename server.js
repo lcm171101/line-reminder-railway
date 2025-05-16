@@ -26,7 +26,7 @@ function sendLineMessage(to, message) {
 }
 
 app.get("/", (req, res) => {
-  res.send("LINE Reminder Bot for Railway is running.");
+  res.send("LINE Reminder Bot for Render is running.");
 });
 
 app.get("/form", (req, res) => {
