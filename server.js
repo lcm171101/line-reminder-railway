@@ -129,3 +129,69 @@ app.get("/run-reminder", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+
+// LINE Webhook 接收訊息
+app.post("/webhook", async (req, res) => {
+  const events = req.body.events || [];
+  for (const event of events) {
+    if (event.type === "message" && event.message.type === "text") {
+      const text = event.message.text;
+      const replyToken = event.replyToken;
+
+      const parsed = parseReminderCommand(text);
+      if (parsed) {
+        reminders.push({
+          id: uuidv4(),
+          createdBy: event.source.userId,
+          name: parsed.name,
+          time: parsed.time,
+          message: parsed.message,
+          repeatType: parsed.repeatType,
+          repeatParam: parsed.repeatParam,
+          expireDate: parsed.expireDate || "",
+          lastSent: ""
+        });
+
+        await replyMessage(replyToken, `✅ 已設定提醒：${parsed.name} ${parsed.time} ${parsed.message}（${parsed.repeatType}）`);
+      } else {
+        await replyMessage(replyToken, "⚠️ 指令格式錯誤，請使用：提醒 [姓名] [時間] [內容] [週期]");
+      }
+    }
+  }
+  res.sendStatus(200);
+});
+
+function replyMessage(replyToken, text) {
+  return axios.post("https://api.line.me/v2/bot/message/reply", {
+    replyToken,
+    messages: [{ type: "text", text }]
+  }, {
+    headers: {
+      'Authorization': `Bearer ${LINE_TOKEN}`,
+      'Content-Type': 'application/json'
+    }
+  });
+}
+
+// 指令格式：提醒 張小明 09:00 喝水 每日
+function parseReminderCommand(text) {
+  const regex = /^提醒\s+(\S+)\s+(\d{1,2}:\d{2})\s+(\S+)\s+(每日|每週|每月)$/;
+  const match = text.match(regex);
+  if (!match) return null;
+
+  const [_, name, time, message, cycle] = match;
+  const now = new Date();
+  const repeatMap = {
+    "每日": { repeatType: "daily", repeatParam: "" },
+    "每週": { repeatType: "weekly", repeatParam: now.getDay().toString() },
+    "每月": { repeatType: "monthly", repeatParam: now.getDate().toString() }
+  };
+
+  return {
+    name,
+    time,
+    message,
+    ...repeatMap[cycle]
+  };
+}
