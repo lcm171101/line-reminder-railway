@@ -135,6 +135,11 @@ app.listen(PORT, () => {
 app.post("/webhook", async (req, res) => {
   const events = req.body.events || [];
   for (const event of events) {
+    if (event.type === "join" && event.source.type === "group") {
+      const groupId = event.source.groupId;
+      await pushMessage(groupId, "✅ 我已成功加入群組！請輸入提醒指令來建立提醒。");
+    }
+
     if (event.type === "message" && event.message.type === "text") {
       const text = event.message.text;
       const replyToken = event.replyToken;
@@ -194,4 +199,17 @@ function parseReminderCommand(text) {
     message,
     ...repeatMap[cycle]
   };
+}
+
+
+function pushMessage(to, text) {
+  return axios.post("https://api.line.me/v2/bot/message/push", {
+    to,
+    messages: [{ type: "text", text }]
+  }, {
+    headers: {
+      'Authorization': `Bearer ${LINE_TOKEN}`,
+      'Content-Type': 'application/json'
+    }
+  });
 }
