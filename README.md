@@ -1,12 +1,17 @@
 
-# LINE Reminder Bot for Render - v4
+# LINE Reminder Bot for Render - v5
 
-## 🆕 功能升級
-- ✅ 支援提醒編輯與刪除
-- ✅ 每則提醒有唯一 ID
-- ✅ /reminders 提供完整操作介面
+## ✅ 支援提醒週期：
+- once：單次提醒
+- daily：每日提醒
+- weekly：指定星期幾提醒
+- monthly：指定幾號提醒
 
-## 🔗 主要路由
-- /form：新增提醒
-- /reminders：瀏覽、更新與刪除提醒
-- /run-reminder：執行 LINE 推播
+## 🧩 可用網址
+- /form：建立提醒（含週期與參數）
+- /reminders：查詢 / 編輯 / 刪除提醒
+- /run-reminder：自動比對並發送提醒（每分鐘觸發）
+
+## 📝 備註
+- weekly 時請輸入 0~6（0=星期日）
+- monthly 時請輸入 1~31（日）

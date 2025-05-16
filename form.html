@@ -11,14 +11,32 @@
     <label>LINE User ID:<br><input type="text" name="userId" required></label><br><br>
     <label>時間 (HH:MM):<br><input type="text" name="time" required></label><br><br>
     <label>提醒內容:<br><input type="text" name="message" required></label><br><br>
-    <label>每日重複提醒:
-      <select name="repeat">
-        <option value="true">是</option>
-        <option value="false">否</option>
+    <label>提醒週期:
+      <select name="repeatType" onchange="updateParams(this.value)">
+        <option value="once">單次</option>
+        <option value="daily">每日</option>
+        <option value="weekly">每週</option>
+        <option value="monthly">每月</option>
       </select>
     </label><br><br>
+    <div id="paramField">
+      <label>週期參數（星期幾或幾號）:<br><input type="text" name="repeatParam"></label><br><br>
+    </div>
     <label>到期日 (yyyy-mm-dd，可選填):<br><input type="date" name="expireDate"></label><br><br>
     <button type="submit">送出</button>
   </form>
+
+  <script>
+    function updateParams(value) {
+      const field = document.getElementById('paramField');
+      if (value === 'weekly') {
+        field.innerHTML = '<label>星期幾 (0=日 ~ 6=六):<br><input type="number" name="repeatParam" min="0" max="6"></label><br><br>';
+      } else if (value === 'monthly') {
+        field.innerHTML = '<label>幾號 (1~31):<br><input type="number" name="repeatParam" min="1" max="31"></label><br><br>';
+      } else {
+        field.innerHTML = '<label>週期參數（留空）:<br><input type="text" name="repeatParam"></label><br><br>';
+      }
+    }
+  </script>
 </body>
 </html>
