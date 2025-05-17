@@ -1,1 +1,1 @@
-// server.js - 包含 LINE webhook、Firebase Firestore 同步、新增/編輯/刪除提醒
+// LINE Reminder Bot server.js with Firebase + Webhook + CRUD
