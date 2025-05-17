@@ -15,7 +15,7 @@
     <div class="card shadow rounded-4 p-4">
       <h2 class="mb-4 text-primary">提醒事項</h2>
       <div class="mb-3 d-flex justify-content-between flex-wrap gap-3">
-        <input type="text" id="searchInput" class="form-control flex-fill" placeholder="🔍 搜尋姓名或內容…" style="max-width: 350px;">
+        <input type="text" id="searchInput" class="form-control flex-fill" placeholder="🔍 搜尋姓名 / 分類 / 內容…" style="max-width: 350px;">
         <button class="btn btn-success" onclick="downloadCSV()">📤 匯出 CSV</button>
       </div>
       <div class="table-responsive">
@@ -23,6 +23,8 @@
           <thead class="table-light">
             <tr>
               <th>姓名</th>
+              <th>主分類</th>
+              <th>次分類</th>
               <th>時間</th>
               <th class="text-start">內容</th>
               <th>週期</th>
@@ -32,7 +34,7 @@
             </tr>
           </thead>
           <tbody id="reminder-body">
-            <tr><td colspan="7">📄 載入中…</td></tr>
+            <tr><td colspan="9">📄 載入中…</td></tr>
           </tbody>
         </table>
       </div>
@@ -45,12 +47,14 @@
     function renderTable(data) {
       const body = document.getElementById("reminder-body");
       if (data.length === 0) {
-        body.innerHTML = '<tr><td colspan="7">❌ 找不到資料</td></tr>';
+        body.innerHTML = '<tr><td colspan="9">❌ 找不到資料</td></tr>';
         return;
       }
       body.innerHTML = data.map(r => `
         <tr>
           <td>${r.name || ""}</td>
+          <td>${r.mainCategory || ""}</td>
+          <td>${r.subCategory || ""}</td>
           <td>${r.time || ""}</td>
           <td class="wrap text-start">${r.message || ""}</td>
           <td>${r.repeatType || ""}</td>
@@ -64,9 +68,9 @@
     }
 
     function downloadCSV() {
-      let csv = "姓名,時間,內容,週期,到期日,設定者\n";
+      let csv = "姓名,主分類,次分類,時間,內容,週期,到期日,設定者\n";
       rawData.forEach(r => {
-        csv += `${r.name || ""},${r.time || ""},${r.message || ""},${r.repeatType || ""},${r.expireDate || ""},${r.createdBy || ""}\n`;
+        csv += `${r.name || ""},${r.mainCategory || ""},${r.subCategory || ""},${r.time || ""},${r.message || ""},${r.repeatType || ""},${r.expireDate || ""},${r.createdBy || ""}\n`;
       });
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       const link = document.createElement("a");
@@ -93,7 +97,9 @@
       const keyword = this.value.toLowerCase();
       const filtered = rawData.filter(r =>
         (r.name || "").toLowerCase().includes(keyword) ||
-        (r.message || "").toLowerCase().includes(keyword)
+        (r.message || "").toLowerCase().includes(keyword) ||
+        (r.mainCategory || "").toLowerCase().includes(keyword) ||
+        (r.subCategory || "").toLowerCase().includes(keyword)
       );
       renderTable(filtered);
     });
