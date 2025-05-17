@@ -1,1 +1,1 @@
-// server.js 將整合 Google Sheets API 寫入提醒資料
+// Google Sheets Reminder Bot server.js placeholder

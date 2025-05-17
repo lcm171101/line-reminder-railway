@@ -1,1 +1,16 @@
-<div>提醒管理頁（來自 Google Sheets）</div>
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head><meta charset="UTF-8"><title>提醒列表</title></head>
+<body>
+<h2>提醒列表（來自 Google Sheets）</h2>
+<div id="result">載入中...</div>
+<script>
+fetch("/api/reminders")
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("result").innerHTML = "<pre>" + JSON.stringify(data, null, 2) + "</pre>";
+  });
+</script>
+</body>
+</html>
