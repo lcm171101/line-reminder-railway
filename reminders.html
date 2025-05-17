@@ -3,24 +3,28 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="UTF-8">
-  <title>提醒清單 - LINE Reminder Bot</title>
+  <title>提醒事項 - LINE Reminder Bot</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    td, th { vertical-align: middle; white-space: nowrap; }
+    td.wrap { white-space: normal; }
+  </style>
 </head>
 <body class="bg-light">
   <div class="container py-5">
     <div class="card shadow rounded-4 p-4">
-      <h2 class="mb-4">提醒清單</h2>
-      <div class="mb-3 d-flex justify-content-between">
-        <input type="text" id="searchInput" class="form-control w-50 me-3" placeholder="搜尋姓名或內容…">
+      <h2 class="mb-4 text-primary">提醒事項</h2>
+      <div class="mb-3 d-flex justify-content-between flex-wrap gap-3">
+        <input type="text" id="searchInput" class="form-control flex-fill" placeholder="🔍 搜尋姓名或內容…" style="max-width: 350px;">
         <button class="btn btn-success" onclick="downloadCSV()">📤 匯出 CSV</button>
       </div>
       <div class="table-responsive">
-        <table class="table table-bordered table-striped align-middle">
+        <table class="table table-bordered table-hover align-middle text-center">
           <thead class="table-light">
             <tr>
               <th>姓名</th>
               <th>時間</th>
-              <th>內容</th>
+              <th class="text-start">內容</th>
               <th>週期</th>
               <th>到期日</th>
               <th>設定者</th>
@@ -28,7 +32,7 @@
             </tr>
           </thead>
           <tbody id="reminder-body">
-            <tr><td colspan="7">載入中...</td></tr>
+            <tr><td colspan="7">📄 載入中…</td></tr>
           </tbody>
         </table>
       </div>
@@ -40,16 +44,20 @@
 
     function renderTable(data) {
       const body = document.getElementById("reminder-body");
+      if (data.length === 0) {
+        body.innerHTML = '<tr><td colspan="7">❌ 找不到資料</td></tr>';
+        return;
+      }
       body.innerHTML = data.map(r => `
         <tr>
           <td>${r.name || ""}</td>
           <td>${r.time || ""}</td>
-          <td>${r.message || ""}</td>
+          <td class="wrap text-start">${r.message || ""}</td>
           <td>${r.repeatType || ""}</td>
           <td>${r.expireDate || ""}</td>
           <td>${r.createdBy || ""}</td>
           <td>
-            <button class="btn btn-sm btn-danger" onclick="deleteReminder('${r.id}')">刪除</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteReminder('${r.id}')">🗑 刪除</button>
           </td>
         </tr>
       `).join("");
