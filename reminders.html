@@ -1,1 +1,16 @@
-<html><body><h1>提醒清單頁面</h1></body></html>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head><meta charset="UTF-8"><title>提醒清單</title></head>
+<body>
+  <h2>提醒清單</h2>
+  <div id="list">載入中...</div>
+  <script>
+    fetch('/api/reminders').then(res => res.json()).then(data => {
+      const html = data.map(d =>
+        `<div><b>${d.name}</b> ${d.time}｜${d.mainCategory}｜${d.subCategory}｜${d.message}</div>`
+      ).join('');
+      document.getElementById("list").innerHTML = html;
+    });
+  </script>
+</body>
+</html>
