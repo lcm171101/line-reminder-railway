@@ -1,17 +1,18 @@
 
-# LINE Reminder Bot for Render - v5
+# LINE Reminder Bot v12（Firebase 同步版）
 
-## ✅ 支援提醒週期：
-- once：單次提醒
-- daily：每日提醒
-- weekly：指定星期幾提醒
-- monthly：指定幾號提醒
+## 功能特色
+- ✅ 支援 LINE webhook 自動建立提醒
+- ✅ `/form` 建立提醒，含姓名與時間下拉選單
+- ✅ 編輯 / 刪除提醒會自動同步至 Firebase Firestore
+- ✅ 支援提醒週期（once/daily/weekly/monthly）
 
-## 🧩 可用網址
-- /form：建立提醒（含週期與參數）
-- /reminders：查詢 / 編輯 / 刪除提醒
-- /run-reminder：自動比對並發送提醒（每分鐘觸發）
+## 部署教學（Render）
+1. 上傳本專案至 GitHub
+2. 建立 Render Web Service，設環境變數：LINE_TOKEN
+3. 指定啟動指令：`npm start`
+4. 將 Webhook 設為：`https://your-app-url/webhook`
 
-## 📝 備註
-- weekly 時請輸入 0~6（0=星期日）
-- monthly 時請輸入 1~31（日）
+## Firebase 結構
+集合：`reminders`
+欄位：name / createdBy / time / message / repeatType / repeatParam / expireDate / lastSent

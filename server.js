@@ -1,1 +1,1 @@
-// server.js content from v12 (Firebase CRUD to be added here)
+// server.js - 包含 LINE webhook、Firebase Firestore 同步、新增/編輯/刪除提醒
