@@ -1,1 +1,13 @@
-{ /* Firebase Google Sheets API 憑證 (填入你自己的 JSON) */ }
+{
+  "type": "service_account",
+  "project_id": "inxtip",
+  "private_key_id": "cad683d2903a303332b75a7b39fd8fd962ec1434",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDK1uuG706PJfok\n0bTB95JVeOMfXVDhs4744bD2VG6Wtf7Y3Jp/tklKjjOnw8ka/sPw8y3LPIoJXwJm\nJlx8Ilq6bucpVJmUR9E5LazvBPMhnUQuj0rzE7ljlyl/UqVzjfT2M+EgSBqLweRy\nIdbyhqHzojHS8pm2Jwg0+0ji41saqHi/a97yZ6n1Bt0zw3TUHAkncTgF09JiJE+S\nXsu1KA1H0l2MGMroAbKwQzcwhtxoMbekmEDSfSS3lxG1fJyr5g03V1TkoeCRjFPM\nqpY4he+vjkhXugUak/ulQBruBMqcXCNY7ETwY/gjq7BYXqDTVvMigJ0O+/9rBx8D\nQe/zneKtAgMBAAECggEAAQg8LBhKofW01CxvC7A7VPnxSvuMUSHYPBtjBhtX/O5F\n38Tgl/ei9APxMh8EoWaNvtbb/CWzeLc6OnoJAVtw8K4sCd/R9zHiOJ51STnfuxBS\nYtUBEEOgyAlA3X1L6SY3+I9ImkBYczfkgXDOU5MM+Ctggeor1xYZVvXszxyVK44F\noRQWvL4k3MQiecdOgNalKBVZi2YJYt7ttlacOzvtAKMBz9rxQe6xcBP1y9EEhYfY\nPTT0ApqfdyFc4Npn5Ds+AY+RHf0+G/vC3LCo6DgqKOFKAKS0RFUYC3OU0AaIjZPH\nWT/uIHKpe7tZNj/hb1JpomJrDlaqBt2tiCoXDKqHHQKBgQDkXa+kQyHG3JIOyFfq\nW8NUuj29Ebzb4zMp1tvJhSDlTeM6w8lCkJVk1lk/THWQbUobQpSHDZpMXj7Emmsv\nxNNhTvvpvmh6GUQM2QzY1zugI4tGCSRf45MprROCl2aELv4N51l0U9vPw9f+x5ZA\n3JUnTe0akGr65vCUoQo5Es0atwKBgQDjYnoZGvRWAA5IWhRkowSovkoileyxTfZQ\nz794alQWnbdVRPNbSB8mB3ANGSn3GxD4fJKYZn4cPRMEy6z3fYVyNAxGqDC7hHZA\nfbadBD5RD7Ni3ZOdAxskX+rHllKFlbCZ2IhRUxTqunhEUU7AYemICyjHqSLNtvA3\ni8/kb8yZuwKBgQCj9+C1QL5v2s/EbXUygNCvdUn/B01jVK7Xy73j5ALKojIVb56C\nfO3HiWBrYqrHGLGtARFEJzAyxTisUXPEyL49kEiwfFbn1FxYHUBsMZ5OTTcjAk1r\nzCtOMUdg7PRe1J71vLcuH0gk1amw9f2cdMVjg0BLYoZtwIPdNAPzFtzN4QKBgAIK\nRCYtg7uxzG8Bv+UXQVdyPaAJ0FHW7TrUYldmPNLnH1n4gGZ1QzJIJs03SJUa/Q/9\nriMH6GHAeoc0fJzL14KqzOFlaOqFybnSZu0JuLVpeqaMbmKeQIQXCDg6NQtVyHvY\n4YA5SprAiYuzXw2C02GRGBCSh+lolscozfiyuBc5AoGBAKlV8+cw6J7a71I/EXLI\nlT45pJrjD3L+mQKdTjc5vezBQxx3+15Wlg6CIC5XpWFu7Nq1M0JdM+QyFcvfWTGS\n0pQqsFgMENTTZ36Fez8jUtK5OHUH3tfkIoOLG3sLGnr1flEJ9iljsk5RRnC3QPYc\nRaYoqqJlx5Igx8pTSMfO+HaR\n-----END PRIVATE KEY-----\n",
+  "client_email": "sheet-writer-bot@inxtip.iam.gserviceaccount.com",
+  "client_id": "117805232033124662603",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/sheet-writer-bot%40inxtip.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
