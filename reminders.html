@@ -1,0 +1,17 @@
+
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head><meta charset="UTF-8"><title>提醒列表</title></head>
+<body>
+  <h2>提醒列表（Firebase 同步版）</h2>
+  <div id="data">Loading...</div>
+  <script>
+    fetch("/api/reminders")
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById("data");
+        container.innerHTML = "<pre>" + JSON.stringify(data, null, 2) + "</pre>";
+      });
+  </script>
+</body>
+</html>
