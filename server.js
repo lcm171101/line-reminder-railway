@@ -50,4 +50,14 @@ app.post("/set-reminder", async (req, res) => {
   }
 });
 
+
+app.get("/form", (req, res) => {
+  res.sendFile(__dirname + "/form.html");
+});
+
+app.get("/reminders", (req, res) => {
+  res.sendFile(__dirname + "/reminders.html");
+});
+
 app.listen(PORT, () => console.log("Server running."));
+
