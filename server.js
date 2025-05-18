@@ -162,3 +162,20 @@ app.post("/set-reminder", async (req, res) => {
 });
 
 app.listen(PORT, () => console.log("Server running."));
+
+
+app.post("/webhook", (req, res) => {
+  const event = req.body.events?.[0];
+  if (!event || !event.source) return res.sendStatus(200);
+
+  const source = event.source;
+  if (source.groupId) {
+    console.log("👉 群組 ID:", source.groupId);
+  } else if (source.roomId) {
+    console.log("👉 聊天室 ID:", source.roomId);
+  } else if (source.userId) {
+    console.log("👉 使用者 ID:", source.userId);
+  }
+
+  res.sendStatus(200);
+});
