@@ -23,14 +23,15 @@ app.get("/api/reminders", async (req, res) => {
   const sheets = google.sheets({ version: "v4", auth: client });
   const result = await sheets.spreadsheets.values.get({
     spreadsheetId: sheetId,
-    range: "工作表1!A2:K"
+    range: "工作表1!A2:L"
   });
   const rows = result.data.values || [];
   const data = rows.map((row, index) => ({
     rowIndex: index + 2,
     id: row[0], name: row[1], mainCategory: row[2], subCategory: row[3],
     time: row[4], message: row[5], repeatType: row[6],
-    repeatParam: row[7], expireDate: row[8], createdBy: row[9], lastSent: row[10]
+    repeatParam: row[7], expireDate: row[8], createdBy: row[9], subSubCategory: row[8],
+    expireDate: row[9], createdBy: row[10], lastSent: row[11]
   }));
   res.json(data);
 });
@@ -41,7 +42,7 @@ app.get("/api/reminders/:id", async (req, res) => {
   const sheets = google.sheets({ version: "v4", auth: client });
   const result = await sheets.spreadsheets.values.get({
     spreadsheetId: sheetId,
-    range: "工作表1!A2:K"
+    range: "工作表1!A2:L"
   });
   const rows = result.data.values || [];
   for (let i = 0; i < rows.length; i++) {
@@ -51,7 +52,8 @@ app.get("/api/reminders/:id", async (req, res) => {
         rowIndex: i + 2,
         id: r[0], name: r[1], mainCategory: r[2], subCategory: r[3],
         time: r[4], message: r[5], repeatType: r[6],
-        repeatParam: r[7], expireDate: r[8], createdBy: r[9], lastSent: r[10]
+        repeatParam: r[7], expireDate: r[8], createdBy: r[9], subSubCategory: r[8],
+    expireDate: r[9], createdBy: r[10], lastSent: r[11]
       });
     }
   }
@@ -64,7 +66,7 @@ app.put("/api/reminders/:id", async (req, res) => {
   const sheets = google.sheets({ version: "v4", auth: client });
   const result = await sheets.spreadsheets.values.get({
     spreadsheetId: sheetId,
-    range: "工作表1!A2:K"
+    range: "工作表1!A2:L"
   });
   const rows = result.data.values || [];
   let found = false;
@@ -84,7 +86,7 @@ app.put("/api/reminders/:id", async (req, res) => {
             req.body.time,
             req.body.message,
             req.body.repeatType,
-            req.body.repeatParam,
+            req.body.repeatParam, req.body.subSubCategory,
             req.body.expireDate,
             req.body.createdBy,
             req.body.lastSent || ""
@@ -104,7 +106,7 @@ app.delete("/api/reminders/:id", async (req, res) => {
   const sheets = google.sheets({ version: "v4", auth: client });
   const result = await sheets.spreadsheets.values.get({
     spreadsheetId: sheetId,
-    range: "工作表1!A2:K"
+    range: "工作表1!A2:L"
   });
   const rows = result.data.values || [];
   for (let i = 0; i < rows.length; i++) {
@@ -138,7 +140,8 @@ app.post("/set-reminder", async (req, res) => {
       repeatParam: req.body.repeatParam || "",
       expireDate: req.body.expireDate || "",
       createdBy: req.body.createdBy,
-      lastSent: ""
+      subSubCategory: req.body.subSubCategory || "",
+    lastSent: ""
     };
     await sheets.spreadsheets.values.append({
       spreadsheetId: sheetId,
@@ -148,7 +151,7 @@ app.post("/set-reminder", async (req, res) => {
       requestBody: { values: [[
         reminder.id, reminder.name, reminder.mainCategory,
         reminder.subCategory, reminder.time, reminder.message,
-        reminder.repeatType, reminder.repeatParam,
+        reminder.repeatType, reminder.repeatParam, reminder.subSubCategory,
         reminder.expireDate, reminder.createdBy, reminder.lastSent
       ]]},
     });

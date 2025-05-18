@@ -67,15 +67,34 @@
       <input type="text" name="name" required>
 
       <label>主分類 <span class="category-badge">單位內部事項 / 廠區項目</span></label>
-      <select name="mainCategory">
-        <option value="單位內部事項">單位內部事項</option>
-        <option value="廠區項目">廠區項目</option>
-      </select>
+      
+<select name="mainCategory">
+  <option value="單位內部事項">單位內部事項</option>
+  <option value="T0">T0</option>
+  <option value="T1">T1</option>
+  <option value="T2">T2</option>
+  <option value="T3">T3</option>
+  <option value="T6">T6</option>
+  <option value="Fab3">Fab3</option>
+  <option value="Fab5">Fab5</option>
+</select>
 
-      <label>次分類</label>
-      <input type="text" name="subCategory">
 
-      <label>提醒時間</label>
+      
+<label>次分類</label>
+<select name="subCategory">
+  <option value="產品">產品</option>
+  <option value="DRC">DRC</option>
+  <option value="LVS">LVS</option>
+  <option value="Netlist">Netlist</option>
+  <option value="Other">Other</option>
+</select>
+
+
+      <label>次次分類</label>
+<input type="text" name="subSubCategory">
+
+<label>提醒時間</label>
       <div style="display:flex;gap:10px;">
         <select id="hour" onchange="updateTime()"></select>
         <select id="minute" onchange="updateTime()"></select>

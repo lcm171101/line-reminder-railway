@@ -27,7 +27,7 @@
   function render(data) {
     document.getElementById("list").innerHTML = data.map(d => `
       <div style="margin:5px;border-bottom:1px solid #ccc">
-        <b>${d.name}</b> | ${d.mainCategory}/${d.subCategory} | ${d.time} | ${d.message}
+        <b>${d.name}</b> | ${d.mainCategory}/${d.subCategory} | ${d.time} | ${d.message} | 次次分類: ${d.subSubCategory || "-"}
         <button onclick="deleteReminder('${d.id}')">🗑 刪除</button>
       </div>
     `).join("");
