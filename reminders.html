@@ -1,1 +1,56 @@
-<html><body><h2>提醒頁</h2></body></html>
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>提醒清單</title>
+</head>
+<body>
+  <h2>提醒清單</h2>
+  <input type="text" id="search" placeholder="搜尋提醒..." oninput="filterReminders()"><br><br>
+  <button onclick="exportCSV()">📤 匯出 CSV</button>
+  <div id="list">載入中...</div>
+
+<script>
+  let reminderData = [];
+
+  function filterReminders() {
+    const keyword = document.getElementById("search").value.toLowerCase();
+    const filtered = reminderData.filter(r =>
+      Object.values(r).some(v => (v || "").toLowerCase().includes(keyword))
+    );
+    render(filtered);
+  }
+
+  function render(data) {
+    document.getElementById("list").innerHTML = data.map(d => `
+      <div style="margin:5px;border-bottom:1px solid #ccc">
+        <b>${d.name}</b> | ${d.mainCategory}/${d.subCategory} | ${d.time} | ${d.message}
+        <button onclick="deleteReminder('${d.id}')">🗑 刪除</button>
+      </div>
+    `).join("");
+  }
+
+  function exportCSV() {
+    let csv = "姓名,主分類,次分類,時間,提醒內容,週期,到期日,設定者\n";
+    reminderData.forEach(r => {
+      csv += `"${r.name}","${r.mainCategory}","${r.subCategory}","${r.time}","${r.message}","${r.repeatType}","${r.expireDate}","${r.createdBy}"\n`;
+    });
+    const blob = new Blob([csv], {type: "text/csv"});
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "reminders.csv";
+    a.click();
+  }
+
+  function deleteReminder(id) {
+    fetch("/api/reminders/" + id, { method: "DELETE" }).then(() => location.reload());
+  }
+
+  fetch("/api/reminders").then(res => res.json()).then(data => {
+    reminderData = data;
+    render(reminderData);
+  });
+</script>
+</body>
+</html>

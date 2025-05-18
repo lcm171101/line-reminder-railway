@@ -1,1 +1,50 @@
-<html><body><h2>表單頁</h2></body></html>
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>建立提醒</title>
+</head>
+<body>
+  <h2>建立提醒</h2>
+  <form method="POST" action="/set-reminder">
+    姓名：<input type="text" name="name" required><br>
+    主分類：
+    <select name="mainCategory">
+      <option value="單位內部事項">單位內部事項</option>
+      <option value="廠區項目">廠區項目</option>
+    </select><br>
+    次分類：<input type="text" name="subCategory"><br>
+    提醒時間：
+    <select id="hour" onchange="updateTime()"></select>:
+    <select id="minute" onchange="updateTime()"></select><br>
+    <input type="hidden" id="time" name="time"><br>
+    提醒內容：<input type="text" name="message" required><br>
+    重複週期：
+    <select name="repeatType">
+      <option value="once">一次</option>
+      <option value="daily">每日</option>
+      <option value="weekly">每週</option>
+      <option value="monthly">每月</option>
+    </select><br>
+    到期日：<input type="date" name="expireDate"><br>
+    設定者：<input type="text" name="createdBy"><br>
+    <button type="submit">建立提醒</button>
+  </form>
+
+<script>
+  function updateTime() {
+    const h = document.getElementById('hour').value;
+    const m = document.getElementById('minute').value;
+    document.getElementById('time').value = h + ":" + m;
+  }
+  for (let i = 0; i < 24; i++) {
+    document.getElementById('hour').innerHTML += `<option value="${String(i).padStart(2, '0')}">${String(i).padStart(2, '0')}</option>`;
+  }
+  for (let i = 0; i < 60; i++) {
+    document.getElementById('minute').innerHTML += `<option value="${String(i).padStart(2, '0')}">${String(i).padStart(2, '0')}</option>`;
+  }
+  updateTime();
+</script>
+</body>
+</html>
