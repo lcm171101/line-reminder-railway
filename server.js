@@ -8,17 +8,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 const auth = new google.auth.GoogleAuth({
-  keyFile: "/etc/secrets/inxtip-67731e8601e1.json",
+  keyFile: "/etc/secrets/inxtip-89eabe38b19b.json",
   scopes: ["https://www.googleapis.com/auth/spreadsheets"]
 });
 const sheetId = "1IQ9SCpBc3eWNfz3wfZYsRIHE0sUwNfZQMBb2UpcSqRo";
 
-app.get("/form", (req, res) => {
-  res.sendFile(__dirname + "/form.html");
-});
-app.get("/reminders", (req, res) => {
-  res.sendFile(__dirname + "/reminders.html");
-});
+app.get("/form", (req, res) => res.sendFile(__dirname + "/form.html"));
+app.get("/reminders", (req, res) => res.sendFile(__dirname + "/reminders.html"));
 app.get("/api/reminders", async (req, res) => {
   const client = await auth.getClient();
   const sheets = google.sheets({ version: "v4", auth: client });
@@ -61,7 +57,7 @@ app.post("/set-reminder", async (req, res) => {
         reminder.subCategory, reminder.time, reminder.message,
         reminder.repeatType, reminder.repeatParam,
         reminder.expireDate, reminder.createdBy, reminder.lastSent
-      ]]}
+      ]]},
     });
     res.send("✅ 提醒已寫入 Google Sheets！");
   } catch (err) {
@@ -69,4 +65,4 @@ app.post("/set-reminder", async (req, res) => {
   }
 });
 app.post("/webhook", (req, res) => res.sendStatus(200));
-app.listen(PORT, () => console.log("Server running."));
+app.listen(PORT, () => console.log("Server running on " + PORT));
