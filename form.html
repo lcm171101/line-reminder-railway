@@ -4,35 +4,104 @@
 <head>
   <meta charset="UTF-8">
   <title>建立提醒</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+      background: #f5f7fa;
+    }
+    h2 {
+      color: #2c3e50;
+    }
+    label {
+      font-weight: bold;
+      display: block;
+      margin-top: 12px;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .category-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      margin: 4px 0;
+      font-size: 12px;
+      background: #e0e0e0;
+      border-radius: 6px;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    }
+    .nav {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+  </style>
 </head>
-<body style="font-family:sans-serif;padding:20px;">
-    <a href='/reminders' style="float:right;">📋 查看提醒清單</a>
-    <h2 style="color:#0066cc">建立或編輯提醒</h2><hr style="margin-bottom:20px;">
-  <h2>建立提醒</h2>
-  <form id="reminderForm">
-    姓名：<input type="text" name="name" required><br>
-    主分類：
-    <select name="mainCategory">
-      <option value="單位內部事項">單位內部事項</option>
-      <option value="廠區項目">廠區項目</option>
-    </select><br>
-    次分類：<input type="text" name="subCategory"><br>
-    提醒時間：
-    <select id="hour" onchange="updateTime()"></select>:
-    <select id="minute" onchange="updateTime()"></select><br>
-    <input type="hidden" id="time" name="time"><br>
-    提醒內容：<input type="text" name="message" required><br>
-    重複週期：
-    <select name="repeatType">
-      <option value="once">一次</option>
-      <option value="daily">每日</option>
-      <option value="weekly">每週</option>
-      <option value="monthly">每月</option>
-    </select><br>
-    到期日：<input type="date" name="expireDate"><br>
-    設定者：<input type="text" name="createdBy"><br>
-    <button type="submit">建立提醒</button>
-  </form>
+<body>
+  <div class="container">
+    <div class="nav"><a href='/reminders'>📋 查看提醒清單</a></div>
+    <h2>建立或編輯提醒</h2>
+    <form id="reminderForm">
+      <label>姓名</label>
+      <input type="text" name="name" required>
+
+      <label>主分類 <span class="category-badge">單位內部事項 / 廠區項目</span></label>
+      <select name="mainCategory">
+        <option value="單位內部事項">單位內部事項</option>
+        <option value="廠區項目">廠區項目</option>
+      </select>
+
+      <label>次分類</label>
+      <input type="text" name="subCategory">
+
+      <label>提醒時間</label>
+      <div style="display:flex;gap:10px;">
+        <select id="hour" onchange="updateTime()"></select>
+        <select id="minute" onchange="updateTime()"></select>
+      </div>
+      <input type="hidden" id="time" name="time">
+
+      <label>提醒內容</label>
+      <input type="text" name="message" required>
+
+      <label>重複週期</label>
+      <select name="repeatType">
+        <option value="once">一次</option>
+        <option value="daily">每日</option>
+        <option value="weekly">每週</option>
+        <option value="monthly">每月</option>
+      </select>
+
+      <label>到期日</label>
+      <input type="date" name="expireDate">
+
+      <label>設定者</label>
+      <input type="text" name="createdBy">
+
+      <button type="submit">💾 儲存提醒</button>
+    </form>
+  </div>
 
 <script>
   function updateTime() {
@@ -41,17 +110,13 @@
     document.getElementById('time').value = h + ":" + m;
   }
   for (let i = 0; i < 24; i++) {
-    document.getElementById('hour').innerHTML += `<option value="${String(i).padStart(2, '0')}">${String(i).padStart(2, '0')}</option>`;
+    document.getElementById('hour').innerHTML += `<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`;
   }
   for (let i = 0; i < 60; i++) {
-    document.getElementById('minute').innerHTML += `<option value="${String(i).padStart(2, '0')}">${String(i).padStart(2, '0')}</option>`;
+    document.getElementById('minute').innerHTML += `<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`;
   }
   updateTime();
-</script>
-</body>
-</html>
 
-<script>
   const params = new URLSearchParams(location.search);
   const id = params.get("id");
   if (id) {
@@ -80,6 +145,29 @@
       });
   } else {
     document.getElementById("reminderForm").setAttribute("action", "/set-reminder");
-    document.getElementById("reminderForm").setAttribute("method", "POST");
+    document.getElementById("reminderForm").addEventListener("submit", e => {
+  e.preventDefault();
+  const body = Object.fromEntries(new FormData(e.target));
+  fetch("/set-reminder", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
+  }).then(() => showToastThenRedirect());
+});
   }
 </script>
+
+<div id="toast" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
+background:#28a745;color:white;padding:10px 20px;border-radius:5px;box-shadow:0 2px 8px rgba(0,0,0,0.2);">
+✅ 提醒已建立成功！即將跳轉...
+</div>
+<script>
+function showToastThenRedirect() {
+  const toast = document.getElementById("toast");
+  toast.style.display = "block";
+  setTimeout(() => location.href = "/reminders", 1500);
+}
+</script>
+</body>
+
+</html>
