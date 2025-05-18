@@ -97,8 +97,6 @@
 <label for="time">提醒日期</label>
 <input type="date" class="form-control" name="time" required>
       </div>
-      <input type="hidden" id="time" name="time">
-
       <label>提醒內容</label>
       <input type="text" name="message" required>
 
@@ -120,59 +118,7 @@
     </form>
   </div>
 
-<script>
-  function updateTime() {
-    const h = document.getElementById('hour').value;
-    const m = document.getElementById('minute').value;
-    document.getElementById('time').value = h + ":" + m;
-  }
-  for (let i = 0; i < 24; i++) {
-    document.getElementById('hour').innerHTML += `<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`;
-  }
-  for (let i = 0; i < 60; i++) {
-    document.getElementById('minute').innerHTML += `<option value="${String(i).padStart(2,'0')}">${String(i).padStart(2,'0')}</option>`;
-  }
-  updateTime();
 
-  const params = new URLSearchParams(location.search);
-  const id = params.get("id");
-  if (id) {
-    fetch("/api/reminders/" + id)
-      .then(res => res.json())
-      .then(data => {
-        for (let key in data) {
-          if (document.querySelector(`[name=${key}]`)) {
-            document.querySelector(`[name=${key}]`).value = data[key];
-          }
-        }
-        const [h, m] = data.time.split(":");
-        document.getElementById("hour").value = h;
-        document.getElementById("minute").value = m;
-        updateTime();
-        const form = document.getElementById("reminderForm");
-        form.addEventListener("submit", e => {
-          e.preventDefault();
-          const body = Object.fromEntries(new FormData(form));
-          fetch("/api/reminders/" + id, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(body)
-          }).then(r => r.text()).then(alert);
-        });
-      });
-  } else {
-    document.getElementById("reminderForm").setAttribute("action", "/set-reminder");
-    document.getElementById("reminderForm").addEventListener("submit", e => {
-  e.preventDefault();
-  const body = Object.fromEntries(new FormData(e.target));
-  fetch("/set-reminder", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body)
-  }).then(() => showToastThenRedirect());
-});
-  }
-</script>
 
 <div id="toast" style="display:none;position:fixed;bottom:20px;left:50%;transform:translateX(-50%);
 background:#28a745;color:white;padding:10px 20px;border-radius:5px;box-shadow:0 2px 8px rgba(0,0,0,0.2);">
