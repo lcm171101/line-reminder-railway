@@ -164,7 +164,9 @@ await axios.post("https://api.line.me/v2/bot/message/push", {
   to: GROUP_ID,
   messages: [{
     type: "text",
-    text: `🔔 新提醒通知\n👤 ${reminder.name}\n🕐 ${reminder.time}\n📌 ${reminder.mainCategory}/${reminder.subCategory}/${reminder.subSubCategory}\n📝 ${reminder.message}`
+    text: `🔔 新提醒通知
+👤 ${reminder.name}
+📅 ${reminder.time}\n📌 ${reminder.mainCategory}/${reminder.subCategory}/${reminder.subSubCategory}\n📝 ${reminder.message}`
   }]
 }, {
   headers: {
