@@ -2,6 +2,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const { google } = require("googleapis");
 const { v4: uuidv4 } = require("uuid");
+const axios = require("axios");
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -11,6 +12,9 @@ const auth = new google.auth.GoogleAuth({
   keyFile: "/etc/secrets/inxtip-89eabe38b19b.json",
   scopes: ["https://www.googleapis.com/auth/spreadsheets"]
 });
+const LINE_TOKEN = process.env.LINE_TOKEN || "mSBsmayCI1bFn4y/GtDahO+tqnkjq8z1thvvHKmJkOSgWheU4BMJ9689bMOUIYPNgH4S4rLMoZjxpGEc6OOut7MiHEnnlK4o7eiGmOOd/GJZAlTVgE4FRubH2+fuZWQcVe6DzTyvWUeKrhwsb0TJhAdB04t89/1O/w1cDnyilFU=";
+const GROUP_ID = "C9303cfa645cd5bc8b650c8a442010ccd";
+
 const sheetId = "1IQ9SCpBc3eWNfz3wfZYsRIHE0sUwNfZQMBb2UpcSqRo";
 
 // Serve static pages
@@ -155,7 +159,21 @@ app.post("/set-reminder", async (req, res) => {
         reminder.expireDate, reminder.createdBy, reminder.lastSent
       ]]},
     });
-    res.send("✅ 提醒已寫入 Google Sheets！");
+    
+await axios.post("https://api.line.me/v2/bot/message/push", {
+  to: GROUP_ID,
+  messages: [{
+    type: "text",
+    text: `🔔 新提醒通知\n👤 ${reminder.name}\n🕐 ${reminder.time}\n📌 ${reminder.mainCategory}/${reminder.subCategory}/${reminder.subSubCategory}\n📝 ${reminder.message}`
+  }]
+}, {
+  headers: {
+    Authorization: `Bearer ${LINE_TOKEN}`,
+    "Content-Type": "application/json"
+  }
+});
+res.send("✅ 提醒已寫入 Google Sheets 並推播！");
+
   } catch (err) {
     res.status(500).send("❌ 寫入失敗：" + err.message);
   }
