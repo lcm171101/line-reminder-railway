@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const { google } = require("googleapis");
 const { v4: uuidv4 } = require("uuid");
 const axios = require("axios");
+const cron = require('node-cron');
 const app = express();
 const PORT = process.env.PORT || 3000;
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -198,4 +199,52 @@ app.post("/webhook", (req, res) => {
   }
 
   res.sendStatus(200);
+});
+
+
+async function pushDailyReminders() {
+  const today = new Date().toISOString().split("T")[0];
+  const weekday = new Date().getDay(); // 0=Sun, 1=Mon, ..., 6=Sat
+  if (weekday === 0 || weekday === 6) return; // skip weekend
+
+  const client = await auth.getClient();
+  const sheets = google.sheets({ version: "v4", auth: client });
+  const result = await sheets.spreadsheets.values.get({
+    spreadsheetId: sheetId,
+    range: "工作表1!A2:L"
+  });
+  const rows = result.data.values || [];
+
+  const messages = rows
+    .filter(row => row[4] === today && (!row[9] || row[9] >= today))
+    .map(row => 
+      `📅 ${row[4]}｜👤 ${row[1]}｜📌 ${row[2]}/${row[3]}/${row[8]}\n📝 ${row[5]}`
+    );
+
+  if (messages.length > 0) {
+    await axios.post("https://api.line.me/v2/bot/message/push", {
+      to: GROUP_ID,
+      messages: [{ type: "text", text: "📋 今日提醒：\n" + messages.join("\n\n") }]
+    }, {
+      headers: {
+        Authorization: `Bearer ${LINE_TOKEN}`,
+        "Content-Type": "application/json"
+      }
+    });
+    console.log("✅ 已推播今日提醒！");
+  } else {
+    console.log("📭 今日無提醒");
+  }
+}
+
+// 設定每日 8:00 AM 推播（Asia/Taipei 為 GMT+8）
+cron.schedule("0 0 * * 1-5", () => {
+  const now = new Date().toLocaleString("en-US", { timeZone: "Asia/Taipei" });
+  const hour = new Date(now).getHours();
+  if (hour === 8) pushDailyReminders();
+});
+
+app.get("/daily-push", async (req, res) => {
+  await pushDailyReminders();
+  res.send("✅ 已觸發測試推播");
 });

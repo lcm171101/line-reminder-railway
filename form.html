@@ -94,10 +94,8 @@
       <label>次次分類</label>
 <input type="text" name="subSubCategory">
 
-<label>提醒時間</label>
-      <div style="display:flex;gap:10px;">
-        <select id="hour" onchange="updateTime()"></select>
-        <select id="minute" onchange="updateTime()"></select>
+<label for="time">提醒日期</label>
+<input type="date" class="form-control" name="time" required>
       </div>
       <input type="hidden" id="time" name="time">
 
