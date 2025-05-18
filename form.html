@@ -7,7 +7,7 @@
 </head>
 <body>
   <h2>建立提醒</h2>
-  <form method="POST" action="/set-reminder">
+  <form id="reminderForm">
     姓名：<input type="text" name="name" required><br>
     主分類：
     <select name="mainCategory">
@@ -48,3 +48,36 @@
 </script>
 </body>
 </html>
+
+<script>
+  const params = new URLSearchParams(location.search);
+  const id = params.get("id");
+  if (id) {
+    fetch("/api/reminders/" + id)
+      .then(res => res.json())
+      .then(data => {
+        for (let key in data) {
+          if (document.querySelector(`[name=${key}]`)) {
+            document.querySelector(`[name=${key}]`).value = data[key];
+          }
+        }
+        const [h, m] = data.time.split(":");
+        document.getElementById("hour").value = h;
+        document.getElementById("minute").value = m;
+        updateTime();
+        const form = document.getElementById("reminderForm");
+        form.addEventListener("submit", e => {
+          e.preventDefault();
+          const body = Object.fromEntries(new FormData(form));
+          fetch("/api/reminders/" + id, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+          }).then(r => r.text()).then(alert);
+        });
+      });
+  } else {
+    document.getElementById("reminderForm").setAttribute("action", "/set-reminder");
+    document.getElementById("reminderForm").setAttribute("method", "POST");
+  }
+</script>
