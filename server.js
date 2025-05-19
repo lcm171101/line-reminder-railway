@@ -79,6 +79,48 @@ app.post("/set-reminder", async (req, res) => {
 });
 
 
+app.get("/api/reminders", async (req, res) => {
+  await doc.useServiceAccountAuth(creds);
+  await doc.loadInfo();
+  const sheet = doc.sheetsByIndex[0];
+  const rows = await sheet.getRows();
+
+  const data = rows.map(row => ({
+    id: row.id,
+    name: row.name,
+    mainCategory: row.mainCategory,
+    subCategory: row.subCategory,
+    subSubCategory: row.subSubCategory,
+    time: row.time,
+    message: row.message,
+    repeatType: row.repeatType,
+    expireDate: row.expireDate,
+    createdBy: row.createdBy,
+    lastSent: row.lastSent,
+  }));
+
+  res.json(data);
+});
+
+
+app.delete("/api/reminders/:id", async (req, res) => {
+  const targetId = req.params.id;
+
+  await doc.useServiceAccountAuth(creds);
+  await doc.loadInfo();
+  const sheet = doc.sheetsByIndex[0];
+  const rows = await sheet.getRows();
+
+  const targetRow = rows.find(row => row.id === targetId);
+  if (targetRow) {
+    await targetRow.delete();
+    res.send({ success: true });
+  } else {
+    res.status(404).send({ success: false, message: "提醒不存在" });
+  }
+});
+
+
 app.get("/push", async (req, res) => {
   try {
     const now = new Date();

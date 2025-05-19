@@ -33,10 +33,21 @@
     `).join("");
   }
 
+  
   function exportCSV() {
-    let csv = "姓名,主分類,次分類,時間,提醒內容,週期,到期日,設定者\n";
+    let csv = "UUID,姓名,主分類,次分類,次次分類,提醒日期,提醒內容,週期,到期日,設定者,最後推播日期
+";
     reminderData.forEach(r => {
-      csv += `"${r.name}","${r.mainCategory}","${r.subCategory}","${r.time}","${r.message}","${r.repeatType}","${r.expireDate}","${r.createdBy}"\n`;
+      csv += \`"\${r.id}","\${r.name}","\${r.mainCategory}","\${r.subCategory}","\${r.subSubCategory || ""}","\${r.time}","\${r.message}","\${r.repeatType}","\${r.expireDate}","\${r.createdBy}","\${r.lastSent || ""}"
+\`;
+    });
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "提醒清單.csv";
+    a.click();
+  }
+","${r.mainCategory}","${r.subCategory}","${r.time}","${r.message}","${r.repeatType}","${r.expireDate}","${r.createdBy}"\n`;
     });
     const blob = new Blob([csv], {type: "text/csv"});
     const a = document.createElement("a");
