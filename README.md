@@ -1,87 +1,73 @@
 
-# 📅 LINE Reminder Bot
+# 📌 LINE Reminder Bot（Google Sheets 整合版）
 
-一個支援 LINE 群組推播與 Google Sheets 整合的提醒系統，支援建立提醒、每日推播、到期控制與網頁管理介面。
-
----
-
-## ✅ 專案功能特色
-
-- ✍️ 使用網頁表單 `/form` 建立提醒
-- 🗂 網頁清單 `/reminders` 管理提醒資料（搜尋 / 刪除 / 匯出 CSV）
-- 📤 成功建立提醒後立即 LINE 群組推播
-- 🕗 每日早上 8 點自動推播今日提醒（僅平日）
-- ⛔ 提醒僅於「提醒日期前 2 天起」～「停止推播日期」間發送
-- ✅ 資料儲存在 Google Sheets 中（支援多人共用）
-- 📄 美化版 UI，支援行動裝置顯示
+本專案為一套整合 LINE Bot + Google Sheets 的提醒系統，具備表單建立提醒、提醒清單管理、自動與即時推播等功能。
 
 ---
 
-## 🔧 安裝與部署（Render / Railway）
+## ✅ 功能總覽
 
-1. **上傳專案檔案**
+### 🔔 提醒建立與推播
+- 使用 `/form` 頁面建立提醒
+- 成功建立後立即推播至指定 LINE 群組
+- 每日早上 08:00～08:10（台灣時間）自動檢查 Google Sheet 並推播提醒（僅限平日）
 
-   包含：
-   - `server.js`
-   - `form.html`
-   - `reminders.html`
-   - `package.json`
+### 🗂 提醒清單 `/reminders`
+- 可查詢提醒清單
+- 支援關鍵字搜尋
+- 支援 CSV 匯出（完整欄位）
+- 支援單筆刪除
 
-2. **安裝依賴套件**
-   ```bash
-   npm install
-   ```
-
-3. **新增 Google Sheets 金鑰檔（service account JSON）**
-   - 命名為 `inxtip-xxxxxx.json`
-   - 記得在 `server.js` 中 require 它
-
-4. **啟動伺服器**
-   ```bash
-   node server.js
-   ```
+### 📤 推播格式（格式 A）
+```
+📌 提醒人：張三
+📂 分類：T0 / 產品 / 進度
+🗓 提醒日期：2025-05-20
+📨 內容：請記得提交設計報告
+```
 
 ---
 
-## 🔐 環境與設定
+## 🔧 安裝與使用方式
 
-- LINE Channel Access Token：寫在 `server.js` 中
-- Google Sheets ID：寫在 `server.js` 中 `new GoogleSpreadsheet(...)`
+### 1. 安裝依賴
+```bash
+npm install
+```
 
-### ✅ 推播群組 ID
+### 2. 建立 Google Sheets 並設定欄位（含試算表 ID）
+- 欄位順序如下：  
+  `id, name, mainCategory, subCategory, subSubCategory, time, message, repeatType, repeatParam, expireDate, createdBy, lastSent`
+- 使用 [google-spreadsheet](https://www.npmjs.com/package/google-spreadsheet) 套件
+- 建立 service account 金鑰並命名為 `inxtip-xxxxxx.json`
 
-- 已設定為 `C9303cfa645cd5bc8b650c8a442010ccd`
+### 3. 設定 server.js 參數
+- Google Sheet ID
+- LINE Channel Access Token
+- LINE 推播目標群組 ID
 
----
+### 4. 啟動伺服器
+```bash
+node server.js
+```
 
-## 🗂 資料表結構（Google Sheets）
-
-| 欄位名稱         | 說明                     |
-|------------------|--------------------------|
-| id               | 唯一識別碼（UUID）        |
-| name             | 被提醒人姓名              |
-| mainCategory     | 主分類（如 T0、Fab5）     |
-| subCategory      | 次分類（如 產品、DRC）    |
-| subSubCategory   | 次次分類（自由輸入）      |
-| time             | 提醒日期（YYYY-MM-DD）    |
-| message          | 提醒內容                 |
-| repeatType       | 重複週期（daily、weekly） |
-| repeatParam      | 重複細節（如每週一）       |
-| expireDate       | 停止推播日期              |
-| createdBy        | 建立者名稱                |
-| lastSent         | 最後推播日期（系統用）    |
-
----
-
-## 📬 推播邏輯
-
-- ✅ 成功建立提醒後，立即推播內容至 LINE 群組
-- ✅ 每日早上 8 點檢查 Google Sheet
-  - 若 `提醒日期 = 今天` 且 `到期日 ≥ 今天` 且為平日，則推播
-  - 系統支援到期前兩天才開始推播
+### 5. 定時推播設定建議
+- 可搭配 [UptimeRobot](https://uptimerobot.com) 每日觸發 `/push`
+- 系統會判斷是否為台灣時間早上 08:00～08:10 再執行
 
 ---
 
-## 📎 授權
+## 📁 路由一覽
 
-本專案由 [你的團隊/單位名稱] 製作，提供內部使用。如需協助部署，請聯繫開發人員。
+| 路徑             | 功能                 |
+|------------------|----------------------|
+| `/form`          | 建立提醒表單         |
+| `/reminders`     | 查看提醒清單         |
+| `/api/reminders` | 取得所有提醒資料 JSON |
+| `/api/reminders/:id` | 刪除指定提醒        |
+| `/push`          | 每日自動推播觸發路由  |
+
+---
+
+## 👨‍💻 作者
+By [inxtip](https://github.com/lcm171101) ・整合 LINE Bot + Google Sheets 提醒系統。
