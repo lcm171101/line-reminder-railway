@@ -78,6 +78,56 @@ app.post("/set-reminder", async (req, res) => {
   res.send(`<script>alert("✅ 提醒建立成功！"); window.location.href='/reminders';</script>`);
 });
 
+
+app.get("/push", async (req, res) => {
+  try {
+    await doc.useServiceAccountAuth(creds);
+    await doc.loadInfo();
+    const sheet = doc.sheetsByIndex[0];
+    const rows = await sheet.getRows();
+
+    const today = new Date();
+    const todayStr = today.toISOString().slice(0, 10);
+    const isWeekday = today.getDay() >= 1 && today.getDay() <= 5;
+
+    let pushedCount = 0;
+
+    for (const row of rows) {
+      const reminderDate = new Date(row.time);
+      const expireDate = new Date(row.expireDate || row.time);
+      const noticeStart = new Date(reminderDate);
+      noticeStart.setDate(reminderDate.getDate() - 2);
+
+      const isValidDate =
+        today >= noticeStart &&
+        today <= expireDate;
+
+      if (isWeekday && isValidDate) {
+        const msg = `🔔 ${row.name} 提醒事項：${row.message}`;
+
+        await axios.post("https://api.line.me/v2/bot/message/push", {
+          to: TARGET_GROUP_ID,
+          messages: [{ type: "text", text: msg }]
+        }, {
+          headers: {
+            "Authorization": `Bearer ${LINE_CHANNEL_ACCESS_TOKEN}`,
+            "Content-Type": "application/json"
+          }
+        });
+
+        row.lastSent = todayStr;
+        await row.save();
+        pushedCount++;
+      }
+    }
+
+    res.send(`✅ 今日推播完成，共發送 ${pushedCount} 則提醒。`);
+  } catch (err) {
+    console.error("❌ 推播錯誤", err);
+    res.status(500).send("❌ 推播失敗：" + (err.response?.data || err.message));
+  }
+});
+
 app.listen(3000, () => {
   console.log("Server running on port 3000");
 });
