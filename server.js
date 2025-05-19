@@ -81,14 +81,23 @@ app.post("/set-reminder", async (req, res) => {
 
 app.get("/push", async (req, res) => {
   try {
+    const now = new Date();
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const taiwanTime = new Date(utc + (8 * 60 * 60000)); // 台灣 GMT+8
+
+    const hour = taiwanTime.getHours();
+    const minute = taiwanTime.getMinutes();
+    const todayStr = taiwanTime.toISOString().slice(0, 10);
+    const isWeekday = taiwanTime.getDay() >= 1 && taiwanTime.getDay() <= 5;
+
+    if (hour !== 8 || minute > 10) {
+      return res.send("⏱ 尚未進入每日推播時段（台灣時間 08:00~08:10）");
+    }
+
     await doc.useServiceAccountAuth(creds);
     await doc.loadInfo();
     const sheet = doc.sheetsByIndex[0];
     const rows = await sheet.getRows();
-
-    const today = new Date();
-    const todayStr = today.toISOString().slice(0, 10);
-    const isWeekday = today.getDay() >= 1 && today.getDay() <= 5;
 
     let pushedCount = 0;
 
@@ -98,9 +107,7 @@ app.get("/push", async (req, res) => {
       const noticeStart = new Date(reminderDate);
       noticeStart.setDate(reminderDate.getDate() - 2);
 
-      const isValidDate =
-        today >= noticeStart &&
-        today <= expireDate;
+      const isValidDate = taiwanTime >= noticeStart && taiwanTime <= expireDate;
 
       if (isWeekday && isValidDate) {
         const msg = `🔔 ${row.name} 提醒事項：${row.message}`;
