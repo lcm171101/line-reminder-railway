@@ -47,11 +47,7 @@ app.post("/set-reminder", async (req, res) => {
   const noticeStart = new Date(exp);
   noticeStart.setDate(exp.getDate() - 2);
 
-  const shouldSend =
-    day >= 1 && day <= 5 &&
-    hour === 8 &&
-    today >= noticeStart &&
-    today <= exp;
+  const shouldSend = true;
 
   if (shouldSend) {
     const payload = {
