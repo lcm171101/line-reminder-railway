@@ -110,7 +110,10 @@ app.get("/push", async (req, res) => {
       const isValidDate = taiwanTime >= noticeStart && taiwanTime <= expireDate;
 
       if (isWeekday && isValidDate) {
-        const msg = `🔔 ${row.name} 提醒事項：${row.message}`;
+        const msg = `📌 提醒人：${row.name}
+📂 分類：${row.mainCategory} / ${row.subCategory} / ${row.subSubCategory || "-"}
+🗓 提醒日期：${row.time}
+📨 內容：${row.message}`;
 
         await axios.post("https://api.line.me/v2/bot/message/push", {
           to: TARGET_GROUP_ID,
