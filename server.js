@@ -53,7 +53,10 @@ app.post("/set-reminder", async (req, res) => {
     const payload = {
       to: TARGET_GROUP_ID,
       messages: [
-        { type: "text", text: `🔔 ${name} 提醒事項：${message}` }
+        { type: "text", text: `📌 提醒人：${name}
+📂 分類：${mainCategory} / ${subCategory} / ${subSubCategory || "-"}
+🗓 提醒日期：${time}
+📨 內容：${message}` }
       ]
     };
 
