@@ -40,43 +40,31 @@ app.post("/set-reminder", async (req, res) => {
     time, message, repeatType, repeatParam, expireDate, createdBy, ""
   ]);
 
-  const today = new Date();
-  const day = today.getDay();
-  const hour = today.getHours();
-  const exp = new Date(expireDate);
-  const noticeStart = new Date(exp);
-  noticeStart.setDate(exp.getDate() - 2);
-
-  const shouldSend = true;
-
-  if (shouldSend) {
-    const payload = {
-      to: TARGET_GROUP_ID,
-      messages: [
-        { type: "text", text: `📌 提醒人：${name}
+  const payload = {
+    to: TARGET_GROUP_ID,
+    messages: [
+      { type: "text", text: `📌 提醒人：${name}
 📂 分類：${mainCategory} / ${subCategory} / ${subSubCategory || "-"}
 🗓 提醒日期：${time}
 📨 內容：${message}` }
-      ]
-    };
+    ]
+  };
 
-    axios.post("https://api.line.me/v2/bot/message/push", payload, {
-      headers: {
-        "Authorization": `Bearer ${LINE_CHANNEL_ACCESS_TOKEN}`,
-        "Content-Type": "application/json"
-      }
-    })
-    .then(res => {
-      console.log(`[推播成功] 給 ${payload.to}：${payload.messages[0].text}`);
-    })
-    .catch(err => {
-      console.error(`[推播失敗]`, err.response?.data || err.message);
-    });
-  }
+  axios.post("https://api.line.me/v2/bot/message/push", payload, {
+    headers: {
+      "Authorization": `Bearer ${LINE_CHANNEL_ACCESS_TOKEN}`,
+      "Content-Type": "application/json"
+    }
+  })
+  .then(res => {
+    console.log(`[推播成功] 給 ${payload.to}：${payload.messages[0].text}`);
+  })
+  .catch(err => {
+    console.error(`[推播失敗]`, err.response?.data || err.message);
+  });
 
   res.send(`<script>alert("✅ 提醒建立成功！"); window.location.href='/reminders';</script>`);
 });
-
 
 app.get("/api/reminders", async (req, res) => {
   await doc.useServiceAccountAuth(creds);
@@ -100,7 +88,6 @@ app.get("/api/reminders", async (req, res) => {
 
   res.json(data);
 });
-
 
 app.delete("/api/reminders/:id", async (req, res) => {
   const targetId = req.params.id;
@@ -128,11 +115,16 @@ app.get("/push", async (req, res) => {
 
     const hour = taiwanTime.getHours();
     const minute = taiwanTime.getMinutes();
-    const todayStr = taiwanTime.toISOString().slice(0, 10);
     const isWeekday = taiwanTime.getDay() >= 1 && taiwanTime.getDay() <= 5;
 
-    if (hour !== 8 || minute > 10) {
-      return res.send("⏱ 尚未進入每日推播時段（台灣時間 08:00~08:10）");
+    const todayStr = taiwanTime.toISOString().slice(0, 10);
+    const tomorrowStr = new Date(taiwanTime.getTime() + 86400000).toISOString().slice(0, 10);
+
+    const isMorning = hour === 8 && minute <= 10;
+    const isAfternoon = hour === 16 && minute >= 50 && minute <= 59;
+
+    if (!isMorning && !isAfternoon) {
+      return res.send("⏱ 尚未進入推播時段（08:00~08:10 或 16:50~17:00）");
     }
 
     await doc.useServiceAccountAuth(creds);
@@ -143,14 +135,21 @@ app.get("/push", async (req, res) => {
     let pushedCount = 0;
 
     for (const row of rows) {
-      const reminderDate = new Date(row.time);
+      const reminderDateStr = row.time;
       const expireDate = new Date(row.expireDate || row.time);
-      const noticeStart = new Date(reminderDate);
-      noticeStart.setDate(reminderDate.getDate() - 2);
+      const reminderDate = new Date(reminderDateStr);
+      const isExpired = taiwanTime > expireDate;
 
-      const isValidDate = taiwanTime >= noticeStart && taiwanTime <= expireDate;
+      if (isExpired || !row.name || !row.message) continue;
 
-      if (isWeekday && isValidDate) {
+      let shouldSend = false;
+      if (isMorning && reminderDateStr === todayStr) {
+        shouldSend = true;
+      } else if (isAfternoon && reminderDateStr === tomorrowStr) {
+        shouldSend = true;
+      }
+
+      if (isWeekday && shouldSend) {
         const msg = `📌 提醒人：${row.name}
 📂 分類：${row.mainCategory} / ${row.subCategory} / ${row.subSubCategory || "-"}
 🗓 提醒日期：${row.time}
@@ -172,12 +171,13 @@ app.get("/push", async (req, res) => {
       }
     }
 
-    res.send(`✅ 今日推播完成，共發送 ${pushedCount} 則提醒。`);
+    res.send(`✅ ${isMorning ? "上午" : "下午"}推播完成，共發送 ${pushedCount} 則提醒。`);
   } catch (err) {
     console.error("❌ 推播錯誤", err);
     res.status(500).send("❌ 推播失敗：" + (err.response?.data || err.message));
   }
 });
+
 
 app.listen(3000, () => {
   console.log("Server running on port 3000");
